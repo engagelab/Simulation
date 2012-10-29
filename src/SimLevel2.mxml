@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:WindowedApplication xmlns:fx="http://ns.adobe.com/mxml/2009" 
+					   xmlns:s="library://ns.adobe.com/flex/spark" 
+					   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*" width="1920" height="1080" applicationComplete="initApp(event)">
+
+	<fx:Script source="exhibit.as" />
+	
+	<fx:Declarations>
+		<!-- Place non-visual elements (e.g., services, value objects) here -->
+	</fx:Declarations>
+	
+	<s:Group width="995" height="600" horizontalCenter="0" verticalCenter="0">
+		<local:simulation id="sim"/>
+		<s:Group left="305" top="0" scaleX="0.67" scaleY="0.67" visible="true">
+			<s:VideoDisplay id="videoPlayer" width="576" height="832" loop="true"  scaleX="1.025" scaleY="1.025"/>
+			<s:VideoDisplay id="videoPlayer2" width="576" height="832" loop="true" visible="false"  scaleX="1.025" scaleY="1.025"/>
+		</s:Group>
+		<s:Group id="spriteGroup" x="455" y="90">
+			<s:SpriteVisualElement id="crossOverlay" x="0" y="0" width="200" height="200"/>
+			<s:SpriteVisualElement id="ventOverlay" x="10" y="370" />
+		</s:Group>
+		<s:Group id="sliderGroup" x="895" y="155">
+			<s:SpriteVisualElement id="sliderContainer" width="50" height="290" y="167"/>
+		</s:Group>
+		<!--s:Group width="100%" height="200" >
+			<s:Rect width="100%" height="100%">
+				<s:fill>
+					<s:SolidColor color="#FFFFFF" />
+				</s:fill>
+			</s:Rect>
+		</s:Group-->
+	</s:Group>
+	<s:Button id="startStopButton" label="Start" click="clickStartStop(event)" top="800" left="750"/>
+</s:WindowedApplication>
