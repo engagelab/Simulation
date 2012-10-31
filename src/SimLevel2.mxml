@@ -11,9 +11,12 @@
 	
 	<s:Group width="995" height="600" horizontalCenter="0" verticalCenter="0">
 		<local:simulation id="sim"/>
-		<s:Group left="305" top="0" scaleX="0.67" scaleY="0.67" visible="true">
-			<s:VideoDisplay id="videoPlayer" width="576" height="832" loop="true"  scaleX="1.025" scaleY="1.025"/>
-			<s:VideoDisplay id="videoPlayer2" width="576" height="832" loop="true" visible="false"  scaleX="1.025" scaleY="1.025"/>
+		<s:Group id="gradientGroup" x="100" y="100">
+			<s:SpriteVisualElement id="gradientContainer" x="100" y="0" width="600" height="400"/>
+		</s:Group>
+		<s:Group left="335" top="77" scaleX="0.595" scaleY="0.59" visible="true">
+			<s:VideoDisplay id="videoPlayer" width="576" height="832" loop="true"  />
+			<s:VideoDisplay id="videoPlayer2" width="576" height="832" loop="true" visible="false"/>
 		</s:Group>
 		<s:Group id="spriteGroup" x="455" y="90">
 			<s:SpriteVisualElement id="crossOverlay" x="0" y="0" width="200" height="200"/>
@@ -22,13 +25,6 @@
 		<s:Group id="sliderGroup" x="895" y="155">
 			<s:SpriteVisualElement id="sliderContainer" width="50" height="290" y="167"/>
 		</s:Group>
-		<!--s:Group width="100%" height="200" >
-			<s:Rect width="100%" height="100%">
-				<s:fill>
-					<s:SolidColor color="#FFFFFF" />
-				</s:fill>
-			</s:Rect>
-		</s:Group-->
 	</s:Group>
 	<s:Button id="startStopButton" label="Start" click="clickStartStop(event)" top="800" left="750"/>
 </s:WindowedApplication>
