@@ -3,28 +3,29 @@
 					   xmlns:s="library://ns.adobe.com/flex/spark" 
 					   xmlns:mx="library://ns.adobe.com/flex/mx" xmlns:local="*" width="1920" height="1080" applicationComplete="initApp(event)">
 
-	<fx:Script source="exhibit.as" />
+	<fx:Script source="sim.as" />
 	
 	<fx:Declarations>
 		<!-- Place non-visual elements (e.g., services, value objects) here -->
 	</fx:Declarations>
 	
 	<s:Group width="995" height="600" horizontalCenter="0" verticalCenter="0">
-		<local:simulation id="sim"/>
-		<s:Group id="gradientGroup" x="100" y="100">
-			<s:SpriteVisualElement id="gradientContainer" x="100" y="0" width="600" height="400"/>
+		<local:simulation id="sim" />
+		<s:Group id="arrowGroup">
+			<s:SWFLoader id="arrowPlayer"/>
 		</s:Group>
+		<local:Slider id="slide" x="850" y="173" />
 		<s:Group left="335" top="77" scaleX="0.595" scaleY="0.59" visible="true">
-			<s:VideoDisplay id="videoPlayer" width="576" height="832" loop="true"  />
+			<s:VideoDisplay id="videoPlayer" width="576" height="832"  />
 			<s:VideoDisplay id="videoPlayer2" width="576" height="832" loop="true" visible="false"/>
 		</s:Group>
-		<s:Group id="spriteGroup" x="455" y="90">
+		<s:Group id="spriteGroup" x="457" y="90">
 			<s:SpriteVisualElement id="crossOverlay" x="0" y="0" width="200" height="200"/>
-			<s:SpriteVisualElement id="ventOverlay" x="10" y="370" />
+			<s:SpriteVisualElement id="ventOverlay" x="6" y="375" />
 		</s:Group>
 		<s:Group id="sliderGroup" x="895" y="155">
 			<s:SpriteVisualElement id="sliderContainer" width="50" height="290" y="167"/>
 		</s:Group>
 	</s:Group>
-	<s:Button id="startStopButton" label="Start" click="clickStartStop(event)" top="800" left="750"/>
+	<local:startStop id="startStopButton" top="800" left="550" click="clickStartStop(event)" />
 </s:WindowedApplication>

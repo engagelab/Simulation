@@ -10,12 +10,14 @@ package
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.GradientType;
+	import flash.display.Loader;
 	import flash.display.Shape;
 	import flash.display.Sprite;
 	import flash.events.MouseEvent;
 	import flash.geom.ColorTransform;
 	import flash.geom.Matrix;
 	import flash.geom.Rectangle;
+	import flash.net.URLRequest;
 	import flash.utils.getTimer;
 	
 	import mx.core.INavigatorContent;
@@ -25,6 +27,7 @@ package
 	{
 		private var changeSpeed:Number = 3;
 		private var bmp:Bitmap;
+		private var myLoader:Loader
 		private var _width:int;
 		private var _height:int;
 		private var _transitionDuration:uint;
@@ -52,10 +55,19 @@ package
 			bData.draw( shp );
 			
 			// Create a Bitmap to display the BitmapData, and add it to the stage.
-			bmp = new Bitmap( bData );
-			addChild( bmp );
+	//		bmp = new Bitmap( bData );
+	//		addChild( bmp );
+			
+	//		var myMask:energywavemask = new energywavemask();
+	//		addChild(myMask);
+	//		bmp.mask = myMask;
 			
 			// this.scrollRect = new Rectangle(0,0, 600, 400);
+			
+			myLoader = new Loader();
+			myLoader.load(new URLRequest("assets/pics/Blur.png"));
+			myLoader.alpha = 0.5;
+			addChild(myLoader);
 		}
 		
 		// Public setter for transition duration
@@ -109,14 +121,14 @@ package
 				};
 				// Tween the colour transform of the bitmap
 				TweenMax.to(
-					bmp,
+					myLoader,
 					changeSpeed,
 					{	colorTransform:
 						{
 							redMultiplier: 0,
 							greenMultiplier: 0,
 							blueMultiplier: 0,
-							alphaMultiplier: 1,
+							alphaMultiplier: 0.5,
 							redOffset: o1.r,
 							greenOffset: o1.g,
 							blueOffset: o1.b,
