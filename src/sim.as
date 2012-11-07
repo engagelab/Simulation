@@ -1,9 +1,12 @@
 import com.greensock.TweenLite;
 import com.greensock.easing.Linear;
 
+import fl.motion.AdjustColor;
+
 import flash.desktop.NativeProcess;
 import flash.desktop.NativeProcessStartupInfo;
 import flash.display.Loader;
+import flash.display.MovieClip;
 import flash.display.StageDisplayState;
 import flash.events.Event;
 import flash.events.IOErrorEvent;
@@ -12,6 +15,7 @@ import flash.events.NativeProcessExitEvent;
 import flash.events.ProgressEvent;
 import flash.events.TimerEvent;
 import flash.filesystem.File;
+import flash.filters.ColorMatrixFilter;
 import flash.geom.Point;
 import flash.geom.Rectangle;
 import flash.net.URLRequest;
@@ -20,10 +24,9 @@ import flash.utils.Dictionary;
 import flash.utils.Timer;
 import flash.utils.clearInterval;
 import flash.utils.setInterval;
-import flash.filters.ColorMatrixFilter;
 
 import mx.events.FlexEvent;
-import fl.motion.AdjustColor;
+import mx.geom.RoundedRectangle;
 
 private const tempMarksBG_Y:int = -955;
 private const tempMarks_Y:int = -2269;
@@ -54,12 +57,13 @@ private var sl:TheSliderClass;
 private var _simLevel:uint;
 private var color:AdjustColor = new AdjustColor();
 private var filter:ColorMatrixFilter;
+private var infoBubble:InfoBubble;
+private var bubbleLocation:Point = new Point(0,0);
 
 public const cA:uint = 0xF59739;
 public const cB:uint = 0xFECC16;
 public const cC:uint = 0x97D4F1;
 public const cD:uint = 0x2D99CC;
-
 
 protected function initApp(event:FlexEvent):void {
 	this.stage.displayState = StageDisplayState.FULL_SCREEN_INTERACTIVE;
@@ -103,16 +107,8 @@ protected function initApp(event:FlexEvent):void {
 	color.hue = 0;
 	color.saturation = 0;
 	
-	startStopButton.buttonStart.addEventListener(MouseEvent.ROLL_OVER, mouseOverButton);
-	startStopButton.buttonStop.addEventListener(MouseEvent.ROLL_OVER, mouseOverButton);
-	startStopButton.buttonStart.addEventListener(MouseEvent.ROLL_OUT, mouseOutButton);
-	startStopButton.buttonStop.addEventListener(MouseEvent.ROLL_OUT, mouseOutButton);
-	
-	startStopButton.buttonStart.addEventListener(MouseEvent.MOUSE_DOWN, clickDownStart);
-	startStopButton.buttonStop.addEventListener(MouseEvent.MOUSE_DOWN, clickDownStop);
-	
-	startStopButton.buttonStart.addEventListener(MouseEvent.MOUSE_UP, clickUpStart);
-	startStopButton.buttonStop.addEventListener(MouseEvent.MOUSE_UP, clickUpStop);
+	setStartStopEvents();
+	setHeatPumpOverlayEvents();
 	
 	// Should be called externally to control which simulation is being displayed
 	setSimulationLevel(2);
@@ -161,6 +157,108 @@ private function clickUpStart(event:MouseEvent):void {
 	startStopButton.buttonStop.visible = true;
 	startStopButton.buttonStart.visible = false;
 }
+public function setStartStopEvents():void {
+	startStopButton.buttonStart.addEventListener(MouseEvent.ROLL_OVER, mouseOverButton);
+	startStopButton.buttonStop.addEventListener(MouseEvent.ROLL_OVER, mouseOverButton);
+	startStopButton.buttonStart.addEventListener(MouseEvent.ROLL_OUT, mouseOutButton);
+	startStopButton.buttonStop.addEventListener(MouseEvent.ROLL_OUT, mouseOutButton);
+	startStopButton.buttonStart.addEventListener(MouseEvent.MOUSE_DOWN, clickDownStart);
+	startStopButton.buttonStop.addEventListener(MouseEvent.MOUSE_DOWN, clickDownStop);
+	startStopButton.buttonStart.addEventListener(MouseEvent.MOUSE_UP, clickUpStart);
+	startStopButton.buttonStop.addEventListener(MouseEvent.MOUSE_UP, clickUpStop);
+}
+
+public function setHeatPumpOverlayEvents():void {
+	infoBubble = new InfoBubble();
+	infoBubble.visible = false;
+	hpOverlay.addChild(infoBubble);
+	hpOverlay.one.addEventListener(MouseEvent.MOUSE_MOVE, showBubble);
+	hpOverlay.one.addEventListener(MouseEvent.MOUSE_OUT, hideBubble);
+	hpOverlay.two.addEventListener(MouseEvent.MOUSE_MOVE, showBubble);
+	hpOverlay.two.addEventListener(MouseEvent.MOUSE_OUT, hideBubble);
+	hpOverlay.three.addEventListener(MouseEvent.MOUSE_MOVE, showBubble);
+	hpOverlay.three.addEventListener(MouseEvent.MOUSE_OUT, hideBubble);
+	hpOverlay.four.addEventListener(MouseEvent.MOUSE_MOVE, showBubble);
+	hpOverlay.four.addEventListener(MouseEvent.MOUSE_OUT, hideBubble);
+	hpOverlay.five.addEventListener(MouseEvent.MOUSE_MOVE, showBubble);
+	hpOverlay.five.addEventListener(MouseEvent.MOUSE_OUT, hideBubble);
+	hpOverlay.six.addEventListener(MouseEvent.MOUSE_MOVE, showBubble);
+	hpOverlay.six.addEventListener(MouseEvent.MOUSE_OUT, hideBubble);
+	hpOverlay.seven.addEventListener(MouseEvent.MOUSE_MOVE, showBubble);
+	hpOverlay.seven.addEventListener(MouseEvent.MOUSE_OUT, hideBubble);
+	hpOverlay.eight.addEventListener(MouseEvent.MOUSE_MOVE, showBubble);
+	hpOverlay.eight.addEventListener(MouseEvent.MOUSE_OUT, hideBubble);
+}
+
+public function showBubble(event:MouseEvent):void {
+	var name:String = (event.target as MovieClip).name;
+	infoBubble.visible = true;
+	switch(name) {
+		case "one":
+			infoBubble.setInfoText("Crank");
+			break;
+		case "two":
+			infoBubble.setInfoText("P: " + getPressure("coolTank") + 'bar\n' + "T: " + (heatpumpRunning ? String(currentOutdoorTemp + 3) : String(currentOutdoorTemp)) + 'º');
+			break;
+		case "three":
+			infoBubble.setInfoText("P: " + getPressure("coolTank") + 'bar\n' + "T: " + String(currentOutdoorTemp) + 'º');
+			break;
+		case "four":
+			infoBubble.setInfoText("P: " + getPressure("coolTank") + 'bar\n' + "T: " + (heatpumpRunning ? String(currentOutdoorTemp - 3) : String(currentOutdoorTemp)) + 'º');
+			break;
+		case "five":
+			infoBubble.setInfoText("Release Valve");
+			break;
+		case "six":
+			infoBubble.setInfoText("P: " + getPressure("hotTank") + 'bar\n' + "T: " + (heatpumpRunning ? String(36-currentOutdoorTemp-3) : String(currentOutdoorTemp)) + 'º');
+			break;
+		case "seven":
+			infoBubble.setInfoText("P: " + getPressure("hotTank") + 'bar\n' + "T: " + (heatpumpRunning ? String(36 - currentOutdoorTemp) : String(currentOutdoorTemp)) + 'º');
+			break;
+		case "eight":
+			infoBubble.setInfoText("P: " + getPressure("hotTank") + 'bar\n' + "T: " + (heatpumpRunning ? String(36 - currentOutdoorTemp + 3) : String(currentOutdoorTemp)) + 'º');
+			break;
+	}
+	this.addEventListener(MouseEvent.MOUSE_MOVE, bubbleMove);
+}
+
+public function bubbleMove(event:MouseEvent):void {
+	bubbleLocation.x = event.stageX;
+	bubbleLocation.y = event.stageY;
+	bubbleLocation = hpOverlay.globalToLocal(bubbleLocation);
+	infoBubble.x = bubbleLocation.x + 10;
+	infoBubble.y = bubbleLocation.y + 10;
+}
+
+private function getPressure(tank:String):String {
+	if(tank == "coolTank") {
+		if(currentOutdoorTemp == -5)
+			return "5.76";
+		else if(currentOutdoorTemp == 0)
+			return "6.97";
+		else if(currentOutdoorTemp == 8)
+			return "9.22";
+		else if(currentOutdoorTemp == 15)
+			return "11.56";
+	}
+	else if(tank == "hotTank") {
+		if(currentOutdoorTemp == -5)
+			return "23.78";
+		else if(currentOutdoorTemp == 0)
+			return "6.97";
+		else if(currentOutdoorTemp == 8)
+			return "9.22";
+		else if(currentOutdoorTemp == 15)
+			return "11.56";
+	}
+	return "";
+}
+
+public function hideBubble(event:MouseEvent):void {
+	infoBubble.visible = false;
+	this.removeEventListener(MouseEvent.MOUSE_MOVE, bubbleMove);
+}
+
 public function setSimulationLevel(simLevel:uint):void {
 	_simLevel = simLevel;
 	if(simLevel == 1) {
@@ -169,6 +267,7 @@ public function setSimulationLevel(simLevel:uint):void {
 		startStopButton.visible = false;
 		spriteGroup.visible = false;
 		arrowPlayer.source="assets/flash/ARROW_n1.swf";
+		hpOverlay.visible = false;
 	}
 	else if(simLevel == 2) {
 		sim.hp.alpha = 1;
@@ -176,6 +275,7 @@ public function setSimulationLevel(simLevel:uint):void {
 		spriteGroup.alpha = 1;
 		startStopButton.visible = true;
 		arrowPlayer.source="assets/flash/ARROW_n2.swf";
+		hpOverlay.visible = true;
 	}
 }
 

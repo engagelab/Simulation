@@ -23,6 +23,7 @@
 			<s:SpriteVisualElement id="crossOverlay" x="0" y="0" width="200" height="200"/>
 			<s:SpriteVisualElement id="ventOverlay" x="6" y="375" />
 		</s:Group>
+		<local:HPOverlay id="hpOverlay" x="346" y="101" />
 		<s:Group id="sliderGroup" x="895" y="155">
 			<s:SpriteVisualElement id="sliderContainer" width="50" height="290" y="167"/>
 		</s:Group>
